@@ -26,7 +26,7 @@ setupFilesAfterEnv: ['./jest.setup.ts'],
 In `jest.setup.js`:
 
 ```ts
-import 'jest-macros/global';
+import '@matt-tingen/jest-macros/global';
 ```
 
 ## Usage
