@@ -1,0 +1,25 @@
+{
+  "name": "@matt-tingen/jest-macros",
+  "version": "0.1.0",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": "github:matt-tingen/jest-macros",
+  "scripts": {
+    "build": "eslint src && tsc",
+    "prepublishOnly": "yarn build"
+  },
+  "devDependencies": {
+    "@matt-tingen/eslint-config": "^0.2.5",
+    "@types/jest": "^26.0.13",
+    "@types/node": "^14.10.2",
+    "eslint": "^7.9.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.2"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "global.js",
+    "global.d.ts"
+  ]
+}
