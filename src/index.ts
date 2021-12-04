@@ -1,5 +1,5 @@
 interface Macro<Args extends unknown[]> {
-  (...args: Args): void;
+  (...args: Args): void | Promise<void>;
   title?(providedTitle: string, ...args: Args): string;
 }
 
@@ -52,9 +52,7 @@ const buildRun = (type?: keyof Run): RunFunction => <Args extends unknown[]>(
   // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/naming-convention
   const it_ = type ? it[type] : it;
 
-  it_(title, () => {
-    (macro as Macro<Args>)(...args);
-  });
+  it_(title, () => (macro as Macro<Args>)(...args));
 };
 
 const run: Run = Object.assign(buildRun(), {
