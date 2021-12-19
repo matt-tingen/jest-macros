@@ -1,18 +1,16 @@
 interface Macro<Args extends unknown[]> {
   (...args: Args): void | Promise<void>;
-  title?(providedTitle: string, ...args: Args): string;
+  title?(titleHint: string, ...args: Args): string;
 }
 
+type TitledMacro<Args extends unknown[]> = Required<Macro<Args>>;
+
 type MacroTitle<Args extends unknown[]> = (
-  providedTitle: string,
+  titleHint: string,
   ...args: Args
 ) => string;
 
 interface Run extends RunFunction {
-  /**
-   * Run a test macro.
-   */
-  <Args extends unknown[]>(macro: Macro<Args>, ...args: Args): void;
   /**
    * Only runs this test in the current file.
    */
@@ -28,27 +26,38 @@ interface Run extends RunFunction {
 }
 
 interface RunFunction {
+  /**
+   * Run a test macro.
+   */
+  <Args extends unknown[]>(macro: TitledMacro<Args>, ...args: Args): void;
+  /**
+   * Run a test macro with a title hint.
+   */
   <Args extends unknown[]>(
-    title: string,
-    macro: Macro<Args>,
+    titleHint: string,
+    macro: Macro<Args> | TitledMacro<Args>,
     ...args: Args
   ): void;
-  <Args extends unknown[]>(macro: Macro<Args>, ...args: Args): void;
 }
 
 const buildRun = (type?: keyof Run): RunFunction => <Args extends unknown[]>(
-  macro: Macro<Args> | string,
+  macro: TitledMacro<Args> | Macro<Args> | string,
   ...args: Args
 ) => {
-  let providedTitle = '';
+  let titleHint = '';
 
   if (typeof macro === 'string') {
-    providedTitle = macro;
+    titleHint = macro;
     // eslint-disable-next-line no-param-reassign
     macro = args.shift() as Macro<Args>;
   }
 
-  const title = macro.title?.(providedTitle, ...args) ?? providedTitle;
+  const title = macro.title?.(titleHint, ...args) ?? titleHint;
+
+  if (!title) {
+    throw new Error('Test macro was run without a title');
+  }
+
   // eslint-disable-next-line no-underscore-dangle, @typescript-eslint/naming-convention
   const it_ = type ? it[type] : it;
 
@@ -64,11 +73,11 @@ const run: Run = Object.assign(buildRun(), {
 export const createMacro = <Args extends unknown[]>(
   test: Macro<Args>,
   title: MacroTitle<Args>,
-): Macro<Args> => {
+): TitledMacro<Args> => {
   // eslint-disable-next-line no-param-reassign
   (test as Macro<Args>).title = title;
 
-  return test as Macro<Args>;
+  return test as TitledMacro<Args>;
 };
 
 export default run;
