@@ -53,4 +53,14 @@ run.todo('hint', titledUnary, 0);
 run(titledNullary);
 run(titledUnary, 0);
 run(titledBinary, 0, '');
+
+const testBinary2 = createMacro(binary, (hint) => `works with ${hint}`);
+const testBinary3 = createMacro(
+  (a: number, b: string) => {},
+  (hint) => `works with ${hint}`,
+);
+const testRepeat = createMacro(
+  (value: string, numRepeats: number, expected: string[]) => {},
+  (hint) => `repeat handles ${hint}`,
+);
 // #endregion
